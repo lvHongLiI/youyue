@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="yy-framework-common" />
+        <module name="yy-framework-model" />
+        <module name="yy-framework-utils" />
+        <module name="yy-service-api" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="yy-framework-common" target="1.5" />
+      <module name="yy-framework-model" target="1.5" />
+      <module name="yy-framework-utils" target="1.5" />
+      <module name="yy-parent" target="1.5" />
+      <module name="yy-service-api" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
