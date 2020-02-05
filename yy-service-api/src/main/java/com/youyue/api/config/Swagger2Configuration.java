@@ -19,7 +19,7 @@ public class Swagger2Configuration {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.xuecheng"))
+                .apis(RequestHandlerSelectors.basePackage("com.youyue"))
                 .paths(PathSelectors.any())
                 .build();
     }
@@ -28,7 +28,7 @@ public class Swagger2Configuration {
         return new ApiInfoBuilder()
                 .title("优越教育api文档")
                 .description("优越教育api文档")
-//                .termsOfServiceUrl("/")
+                .termsOfServiceUrl("C:\\Users\\L1340\\Desktop")
                 .version("1.0")
                 .build();
     }

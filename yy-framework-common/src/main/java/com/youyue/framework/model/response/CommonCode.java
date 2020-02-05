@@ -30,16 +30,16 @@ public enum CommonCode implements ResultCode{
         this.message = message;
     }
 
-    @Override
+
     public boolean success() {
         return success;
     }
-    @Override
+
     public int code() {
         return code;
     }
 
-    @Override
+
     public String message() {
         return message;
     }
