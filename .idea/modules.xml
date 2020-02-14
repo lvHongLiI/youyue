@@ -13,6 +13,7 @@
       <module fileurl="file://$PROJECT_DIR$/yy-service-api/yy-service-api.iml" filepath="$PROJECT_DIR$/yy-service-api/yy-service-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/yy-service-manage-cms/yy-service-manage-cms.iml" filepath="$PROJECT_DIR$/yy-service-manage-cms/yy-service-manage-cms.iml" />
       <module fileurl="file://$PROJECT_DIR$/yy-service-manage-cms-client/yy-service-manage-cms-client.iml" filepath="$PROJECT_DIR$/yy-service-manage-cms-client/yy-service-manage-cms-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yy-service-manage-course/yy-service-manage-course.iml" filepath="$PROJECT_DIR$/yy-service-manage-course/yy-service-manage-course.iml" />
     </modules>
   </component>
 </project>

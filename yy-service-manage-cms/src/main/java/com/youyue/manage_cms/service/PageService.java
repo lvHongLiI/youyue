@@ -1,5 +1,6 @@
 package com.youyue.manage_cms.service;
 
+import com.alibaba.fastjson.JSON;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -20,6 +21,8 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,6 +35,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -50,6 +54,8 @@ public class PageService {
 
     @Autowired
     private GridFSBucket gridFSBucket;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Autowired
     private GridFsTemplate gridFsTemplate;
@@ -181,6 +187,43 @@ public class PageService {
          }
         return html;
     }
+
+    /**
+     * 发布页面
+     * @return
+     */
+    public ResponseResult releasePageHtml(String pageId)  {
+        //1.将html页面保存到mongodb数据库
+        //1.1将cmsPage对象查询出来
+        CmsPageResult cmsPageResult = findById(pageId);
+        if (cmsPageResult.getCmsPage()==null){
+            ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_TEMPLATEISNULL);
+        }
+        CmsPage cmsPage = cmsPageResult.getCmsPage();
+        //1.2将HTML页面静态化
+        String htmlContent = getPageHtml(pageId);
+        //1.3将HTML页面转换为流对象
+        InputStream stream = null;
+        try {
+            stream = IOUtils.toInputStream(htmlContent, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //1.4进行保存的mongoDB
+        ObjectId objectId = gridFsTemplate.store(stream,cmsPage.getPageName());
+        //1.5更新cms
+        cmsPage.setHtmlFileId(objectId.toHexString());
+        cmsPageRepository.save(cmsPage);
+
+        //2.将发布HTML页面消息给rabbitmq  随便将pagId作为参数传送过去
+        //2.1将参数进行封装   然后转为字符串
+        Map<String,String> map=new HashMap();
+        map.put("pageId",pageId);
+        String jsonString = JSON.toJSONString(map);
+        //2.2 通过rabbit模板对象进行发送消息
+        rabbitTemplate.convertAndSend("ex_routing_cms_postpage",cmsPage.getSiteId(),jsonString);
+        return  new ResponseResult(CommonCode.SUCCESS);
+    }
     private Map getModelByPageId(String pageId){
         //1.取出页面信息
         CmsPageResult cmsPageResult = findById(pageId);
@@ -231,9 +274,6 @@ public class PageService {
     }
 
     private String generateHtml(String templateContent,Map<String,Object> models){
-        System.out.println(templateContent+"模板内容");
-        System.out.println("****************");
-        System.out.println(models.get("model")+"模板数据");
          try {
              //生成配置类
              Configuration configuration = new Configuration(Configuration.getVersion());
