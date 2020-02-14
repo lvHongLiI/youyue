@@ -13,6 +13,10 @@
         <module>yy-service-api</module>
         <module>yy-framework-common</module>
         <module>yy-service-manage-cms</module>
+        <module>test-freemarker</module>
+        <module>test-rabbitmq-consumer</module>
+        <module>test-rabbitmq-producer</module>
+        <module>yy-service-manage-cms-client</module>
     </modules>
     <!--父工程只作为依赖和模块管理用-->
     <packaging>pom</packaging>
