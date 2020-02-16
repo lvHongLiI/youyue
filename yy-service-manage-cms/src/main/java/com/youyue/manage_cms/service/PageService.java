@@ -9,6 +9,7 @@ import com.youyue.framework.domain.cms.CmsTemplate;
 import com.youyue.framework.domain.cms.request.QueryPageRequest;
 import com.youyue.framework.domain.cms.response.CmsCode;
 import com.youyue.framework.domain.cms.response.CmsPageResult;
+import com.youyue.framework.domain.cms.response.GenerateHtmlResult;
 import com.youyue.framework.exception.ExceptionCast;
 import com.youyue.framework.model.response.CommonCode;
 import com.youyue.framework.model.response.QueryResponseResult;
@@ -29,6 +30,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -41,6 +43,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PageService {
@@ -48,17 +51,16 @@ public class PageService {
     private CmsPageRepository cmsPageRepository;
     @Autowired
     private CmsTemplateRepository cmsTemplateRepository;
-
     @Autowired
     private RestTemplate restTemplate;
-
     @Autowired
     private GridFSBucket gridFSBucket;
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
     @Autowired
     private GridFsTemplate gridFsTemplate;
+    @Autowired
+    private RedisTemplate redisTemplate;
     public QueryResponseResult findList(int page, int size, QueryPageRequest queryPage) {
         //构建分页条件
         if (page<1){
@@ -223,6 +225,24 @@ public class PageService {
         //2.2 通过rabbit模板对象进行发送消息
         rabbitTemplate.convertAndSend("ex_routing_cms_postpage",cmsPage.getSiteId(),jsonString);
         return  new ResponseResult(CommonCode.SUCCESS);
+    }
+
+    /**
+     * 查询页面发布情况
+     * @param pageId
+     * @return
+     */
+    public GenerateHtmlResult findReleaseStatus(String pageId){
+        StringBuilder str=new StringBuilder();
+        //1.将数据从redis中取出来
+        Map<String,String> map = redisTemplate.boundHashOps(pageId).entries();
+        Set<String> keySet = map.keySet();
+        for (String key : keySet) {
+            str.append("   端口:"+key+"发布:"+map.get(key));
+        }
+        //2.封装参数 响应消息
+        String string = str.toString();
+        return new GenerateHtmlResult(CommonCode.SUCCESS,string);
     }
     private Map getModelByPageId(String pageId){
         //1.取出页面信息

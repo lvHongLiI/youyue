@@ -3,6 +3,7 @@ package com.youyue.api.cms;
 import com.youyue.framework.domain.cms.CmsPage;
 import com.youyue.framework.domain.cms.request.QueryPageRequest;
 import com.youyue.framework.domain.cms.response.CmsPageResult;
+import com.youyue.framework.domain.cms.response.GenerateHtmlResult;
 import com.youyue.framework.model.response.QueryResponseResult;
 import com.youyue.framework.model.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -33,4 +34,7 @@ public interface CmsPageControllerApi {
 
    @ApiOperation("发布页面")
    ResponseResult releasePageHtml(String pageId);
+
+   @ApiOperation("查询发布页面情况")
+   GenerateHtmlResult findReleaseStatus(String pageId);
 }

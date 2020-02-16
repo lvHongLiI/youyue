@@ -4,6 +4,7 @@ import com.youyue.api.cms.CmsPageControllerApi;
 import com.youyue.framework.domain.cms.CmsPage;
 import com.youyue.framework.domain.cms.request.QueryPageRequest;
 import com.youyue.framework.domain.cms.response.CmsPageResult;
+import com.youyue.framework.domain.cms.response.GenerateHtmlResult;
 import com.youyue.framework.model.response.CommonCode;
 import com.youyue.framework.model.response.QueryResponseResult;
 import com.youyue.framework.model.response.QueryResult;
@@ -67,5 +68,11 @@ public class CmsPageController implements CmsPageControllerApi {
     public ResponseResult releasePageHtml(@PathVariable("pageId") String pageId) {
         System.out.println("请求id为："+pageId);
         return service.releasePageHtml(pageId);
+    }
+
+    @Override
+    @GetMapping("/findReleaseStatus/{pageId}")
+    public GenerateHtmlResult findReleaseStatus(@PathVariable("pageId")String pageId){
+       return service.findReleaseStatus(pageId);
     }
 }
